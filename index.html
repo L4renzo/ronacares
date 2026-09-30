@@ -1911,7 +1911,7 @@ const translations = {
     age_unit_months: "months", age_unit_years: "years",
     stock_label: "Stock (how many do you have?)", stock_left_one: "left", out_of_stock_label: "Out of stock",
     reserve_btn: "Reserve", reserve_title: "Reserve This Item",
-    reserve_location_label: "Your location", reserve_locate_btn: "Share my live location",
+    reserve_location_label: "Your location", reserve_locate_btn: "Share my live location", reserve_locating_btn: "Locating…",
     reserve_map_hint: "Tap the map to drop a pin, or share your live location above — this helps us find you for delivery.",
     reserve_phone_placeholder: "07XX XXX XXXX",
     reserve_notes_placeholder: "A landmark, best time to reach you, anything that helps",
@@ -1923,7 +1923,11 @@ const translations = {
     status_pending: "Pending", status_fulfilled: "Fulfilled", status_cancelled: "Cancelled",
     reserved_item_label: "Reserved item",
     error_generic: "Something went wrong. Please try again.", error_login_required: "Please log in as admin first.",
-    location_shared: "Live location added", location_manual: "Pin placed on map"
+    location_shared: "Live location added", location_manual: "Pin placed on map",
+    location_error_denied: "Location access is turned off for this site. Enable it in your browser's site settings, or just tap the map to drop a pin instead.",
+    location_error_unavailable: "Couldn't get your location — check that Location Services / GPS is turned on for your browser. You can also tap the map to drop a pin instead.",
+    location_error_timeout: "Finding your location is taking too long. You can try again, or tap the map to drop a pin instead.",
+    location_error_insecure: "Live location only works on a secure (https) page. You can tap the map to drop a pin instead."
 
   },
   ar: {
@@ -2007,7 +2011,7 @@ const translations = {
     age_unit_months: "أشهر", age_unit_years: "سنوات",
     stock_label: "الكمية المتوفرة", stock_left_one: "متبقٍ", out_of_stock_label: "نفدت الكمية",
     reserve_btn: "احجز", reserve_title: "احجز هذه القطعة",
-    reserve_location_label: "موقعك", reserve_locate_btn: "شارك موقعي الحالي",
+    reserve_location_label: "موقعك", reserve_locate_btn: "شارك موقعي الحالي", reserve_locating_btn: "جارٍ تحديد الموقع…",
     reserve_map_hint: "اضغط على الخريطة لتحديد موقع، أو شارك موقعك الحالي أعلاه — هذا يساعدنا في الوصول إليك للتوصيل.",
     reserve_phone_placeholder: "07XX XXX XXXX",
     reserve_notes_placeholder: "علامة مميزة قريبة، أفضل وقت للتواصل، أي شيء يساعدنا",
@@ -2019,7 +2023,11 @@ const translations = {
     status_pending: "قيد الانتظار", status_fulfilled: "تم التسليم", status_cancelled: "ملغى",
     reserved_item_label: "القطعة المحجوزة",
     error_generic: "حدث خطأ ما. حاول مرة أخرى.", error_login_required: "يرجى تسجيل الدخول كمسؤول أولاً.",
-    location_shared: "تمت إضافة الموقع الحالي", location_manual: "تم تحديد موقع على الخريطة"
+    location_shared: "تمت إضافة الموقع الحالي", location_manual: "تم تحديد موقع على الخريطة",
+    location_error_denied: "الوصول إلى الموقع معطّل لهذا الموقع. فعّله من إعدادات المتصفح، أو اضغط على الخريطة لتحديد موقعك يدويًا.",
+    location_error_unavailable: "تعذّر تحديد موقعك — تأكد من تفعيل خدمة الموقع (GPS) في المتصفح. يمكنك أيضًا الضغط على الخريطة لتحديد موقعك يدويًا.",
+    location_error_timeout: "تحديد موقعك يستغرق وقتًا طويلاً. يمكنك المحاولة مرة أخرى، أو الضغط على الخريطة لتحديد موقعك يدويًا.",
+    location_error_insecure: "المشاركة المباشرة للموقع تعمل فقط على صفحة آمنة (https). يمكنك الضغط على الخريطة لتحديد موقعك يدويًا."
 
   },
   ku: {
@@ -2103,7 +2111,7 @@ const translations = {
     age_unit_months: "مانگ", age_unit_years: "ساڵ",
     stock_label: "بڕی بەردەست", stock_left_one: "ماوە", out_of_stock_label: "نەماوە",
     reserve_btn: "داواکردن", reserve_title: "داواکردنی ئەم کەلوپەلە",
-    reserve_location_label: "شوێنت", reserve_locate_btn: "شوێنی ڕاستەقینەم بنێرە",
+    reserve_location_label: "شوێنت", reserve_locate_btn: "شوێنی ڕاستەقینەم بنێرە", reserve_locating_btn: "شوێن دیاریدەکرێت...",
     reserve_map_hint: "کرتە لەسەر نەخشەکە بکە بۆ دیاریکردنی شوێن، یان شوێنی ڕاستەقینەت لەسەرەوە بنێرە — ئەمە یارمەتیمان دەدات بۆ گەیاندنی کاڵاکە بۆت.",
     reserve_phone_placeholder: "٠٧XX XXX XXXX",
     reserve_notes_placeholder: "نیشانەیەکی نزیک، باشترین کات بۆ پەیوەندیکردن، هەر شتێکی تر کە یارمەتیمان دەدات",
@@ -2115,7 +2123,11 @@ const translations = {
     status_pending: "چاوەڕوانە", status_fulfilled: "گەیەنرا", status_cancelled: "هەڵوەشێنرایەوە",
     reserved_item_label: "کەلوپەلی داواکراو",
     error_generic: "شتێک هەڵە بوو. دووبارە هەوڵبدەرەوە.", error_login_required: "تکایە سەرەتا وەک ئەدمین بچۆرەژوورەوە.",
-    location_shared: "شوێنی ڕاستەقینە زیادکرا", location_manual: "نیشانەیەک لەسەر نەخشە دانرا"
+    location_shared: "شوێنی ڕاستەقینە زیادکرا", location_manual: "نیشانەیەک لەسەر نەخشە دانرا",
+    location_error_denied: "ڕێگەپێدانی شوێن بۆ ئەم ماڵپەڕە داخراوە. لە ڕێکخستنەکانی وێبگەڕەکەت چالاکی بکە، یان کرتە لەسەر نەخشەکە بکە بۆ دانانی نیشانە بە دەست.",
+    location_error_unavailable: "نەمانتوانی شوێنەکەت بدۆزینەوە — دڵنیابەرەوە کە GPS/خزمەتگوزاری شوێن لە وێبگەڕەکەت چالاکە. هەروەها دەتوانیت کرتە لەسەر نەخشەکە بکەیت بۆ دانانی نیشانە بە دەست.",
+    location_error_timeout: "دۆزینەوەی شوێنەکەت زۆر کات دەخایەنێت. دەتوانیت دووبارە هەوڵبدەیتەوە، یان کرتە لەسەر نەخشەکە بکەیت بۆ دانانی نیشانە بە دەست.",
+    location_error_insecure: "بەشکردنی شوێنی ڕاستەقینە تەنها لەسەر پەڕەیەکی سەلامەت (https) کار دەکات. دەتوانیت کرتە لەسەر نەخشەکە بکەیت بۆ دانانی نیشانە بە دەست."
 
   }
 };
@@ -2896,18 +2908,65 @@ function openReserveModal(source, itemId, label){
   });
 }
 
-document.getElementById("locateMeBtn").addEventListener("click", ()=>{
-  if(!navigator.geolocation){ showToast(t("error_generic"), true); return; }
+function locateMe(highAccuracy){
+  const btn = document.getElementById("locateMeBtn");
+  const label = btn.querySelector("span");
+  const originalLabel = label.textContent;
+  btn.disabled = true;
+  label.textContent = t("reserve_locating_btn") || originalLabel;
+
+  const reset = ()=>{ btn.disabled = false; label.textContent = originalLabel; };
+
+  // navigator.geolocation only exists on a secure origin (https, or
+  // localhost) — on a plain http:// page (e.g. opened from a file share
+  // or an old cached http link) the API is simply undefined, which used
+  // to fall through to a generic, unhelpful error.
+  if(!window.isSecureContext){
+    showToast(t("location_error_insecure"), true);
+    reset();
+    return;
+  }
+  if(!navigator.geolocation){
+    showToast(t("location_error_unavailable"), true);
+    reset();
+    return;
+  }
+
   navigator.geolocation.getCurrentPosition(
     pos=>{
+      reset();
       ensureReserveMap();
       setReserveMarker(pos.coords.latitude, pos.coords.longitude, "shared live location");
       showToast(t("location_shared"));
     },
-    ()=> showToast(t("error_generic"), true),
-    { enableHighAccuracy: true, timeout: 10000 }
+    err=>{
+      reset();
+      // GeolocationPositionError codes: 1 = PERMISSION_DENIED,
+      // 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT. Telling people which one
+      // happened (and that dropping a pin on the map is always a fine
+      // fallback) is a lot more useful than one generic error toast,
+      // especially on a phone where they can't see a console.
+      if(err && err.code === 1){
+        showToast(t("location_error_denied"), true);
+      }else if(err && err.code === 3){
+        // A first attempt with GPS-accurate positioning can time out
+        // indoors or on a slow mobile connection. Retry once automatically
+        // with coarser (network/cell-tower based) positioning, which is
+        // faster and usually still good enough to find the right street.
+        if(highAccuracy){
+          locateMe(false);
+        }else{
+          showToast(t("location_error_timeout"), true);
+        }
+      }else{
+        showToast(t("location_error_unavailable"), true);
+      }
+    },
+    { enableHighAccuracy: highAccuracy, timeout: highAccuracy ? 12000 : 20000, maximumAge: 60000 }
   );
-});
+}
+
+document.getElementById("locateMeBtn").addEventListener("click", ()=> locateMe(true));
 
 document.getElementById("reserveForm").addEventListener("submit", async e=>{
   e.preventDefault();

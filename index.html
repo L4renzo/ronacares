@@ -1757,13 +1757,21 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // this is a single top-level script block. With the guard, the site still
 // renders and reads in the chosen language; only backend-dependent actions
 // (loading items, logging in, reserving, donating) show a clear error.
-let supabase;
+//
+// NOTE: this is named `db`, not `supabase` — the supabase-js library
+// itself declares a top-level `var supabase = ...` when loaded from the
+// CDN (window.supabase is *set* by it, but the file also creates a plain
+// global `supabase` binding). A `let supabase` here would collide with
+// that and throw "Identifier 'supabase' has already been declared",
+// which is a SyntaxError that kills this entire script block on every
+// successful load — do not rename this back to `supabase`.
+let db;
 let supabaseLoadFailed = false;
 try{
   if(!window.supabase || typeof window.supabase.createClient !== "function"){
     throw new Error("supabase-js did not load");
   }
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }catch(e){
   console.error("Supabase client init failed, running in offline mode:", e);
   supabaseLoadFailed = true;
@@ -1773,7 +1781,7 @@ try{
     order(){ return Promise.resolve({ data: null, error: offlineError }); },
     then(resolve){ resolve({ data: null, error: offlineError }); }
   };
-  supabase = {
+  db = {
     from(){ return offlineQuery; },
     async rpc(){ return { data: null, error: offlineError }; },
     storage: { from(){ return {
@@ -2285,7 +2293,7 @@ function setAdminPass(pass){
 // as its first argument. If the server rejects it (wrong/rotated password),
 // the admin session is cleared and the user is bounced to the login page.
 async function adminCall(fnName, args){
-  const { data, error } = await supabase.rpc(fnName, { p_passphrase: getAdminPass(), ...args });
+  const { data, error } = await db.rpc(fnName, { p_passphrase: getAdminPass(), ...args });
   if(error){
     if(String(error.message||"").includes("invalid admin passphrase")){
       setAdminPass("");
@@ -2378,11 +2386,11 @@ function fileToCompressedBlob(file, maxDim, quality){
 
 async function uploadPhotoBlob(blob, folderPrefix){
   const path = folderPrefix + "/" + uid() + ".jpg";
-  const { error } = await supabase.storage.from(PHOTOS_BUCKET).upload(path, blob, {
+  const { error } = await db.storage.from(PHOTOS_BUCKET).upload(path, blob, {
     contentType: "image/jpeg", upsert: false
   });
   if(error) throw error;
-  const { data } = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path);
+  const { data } = db.storage.from(PHOTOS_BUCKET).getPublicUrl(path);
   return data.publicUrl;
 }
 
@@ -2474,7 +2482,7 @@ let activeAge = "all";
 let activeType = "all";
 
 async function loadClothes(){
-  const { data, error } = await supabase.from("clothing_items").select("*").order("created_at", { ascending: false });
+  const { data, error } = await db.from("clothing_items").select("*").order("created_at", { ascending: false });
   if(error){ showToast(friendlyError(error), true); return; }
   cachedClothes = data || [];
   renderClothesGroupTabs();
@@ -2661,7 +2669,7 @@ async function adjustClothesStock(id, delta){
 let cachedExtra = [];
 
 async function loadExtra(){
-  const { data, error } = await supabase.from("extra_items").select("*").order("created_at", { ascending: false });
+  const { data, error } = await db.from("extra_items").select("*").order("created_at", { ascending: false });
   if(error){ showToast(friendlyError(error), true); return; }
   cachedExtra = data || [];
   renderExtraGrid();
@@ -2906,7 +2914,7 @@ document.getElementById("reserveForm").addEventListener("submit", async e=>{
   const btn = document.getElementById("reserveSubmitBtn");
   btn.disabled = true;
   try{
-    const { error } = await supabase.rpc("submit_reservation", {
+    const { error } = await db.rpc("submit_reservation", {
       p_item_kind: reserveContext.source,
       p_item_id: reserveContext.itemId,
       p_item_label: reserveContext.label,
@@ -3050,7 +3058,7 @@ document.getElementById("reservationDeleteBtn").addEventListener("click", async 
 let cachedSettings = { about_text: null, donate_phone: null };
 
 async function loadSettings(){
-  const { data, error } = await supabase.from("site_settings").select("*");
+  const { data, error } = await db.from("site_settings").select("*");
   if(error){ showToast(friendlyError(error), true); return; }
   (data || []).forEach(row=> { cachedSettings[row.key] = row.value; });
   renderAboutView();
@@ -3117,7 +3125,7 @@ document.getElementById("donateForm").addEventListener("submit", async e=>{
   const btn = e.target.querySelector('button[type="submit"]');
   btn.disabled = true;
   try{
-    const { error } = await supabase.rpc("submit_donation", {
+    const { error } = await db.rpc("submit_donation", {
       p_name: document.getElementById("donateName").value.trim(),
       p_contact: document.getElementById("donateContact").value.trim(),
       p_item_desc: document.getElementById("donateItemDesc").value.trim(),

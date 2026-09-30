@@ -1925,6 +1925,8 @@ const translations = {
     error_generic: "Something went wrong. Please try again.", error_login_required: "Please log in as admin first.",
     location_shared: "Live location added", location_manual: "Pin placed on map",
     location_error_denied: "Location access is turned off for this site. Enable it in your browser's site settings, or just tap the map to drop a pin instead.",
+    location_error_denied_ios: "Location access is off for this site. Go to Settings → Privacy & Security → Location Services → Safari Websites and allow it — or just tap the map to drop a pin instead.",
+    location_error_denied_android: "Location access is off for this site. Tap the lock/info icon next to the address bar → Permissions → Location and allow it — or just tap the map to drop a pin instead.",
     location_error_unavailable: "Couldn't get your location — check that Location Services / GPS is turned on for your browser. You can also tap the map to drop a pin instead.",
     location_error_timeout: "Finding your location is taking too long. You can try again, or tap the map to drop a pin instead.",
     location_error_insecure: "Live location only works on a secure (https) page. You can tap the map to drop a pin instead."
@@ -2025,6 +2027,8 @@ const translations = {
     error_generic: "حدث خطأ ما. حاول مرة أخرى.", error_login_required: "يرجى تسجيل الدخول كمسؤول أولاً.",
     location_shared: "تمت إضافة الموقع الحالي", location_manual: "تم تحديد موقع على الخريطة",
     location_error_denied: "الوصول إلى الموقع معطّل لهذا الموقع. فعّله من إعدادات المتصفح، أو اضغط على الخريطة لتحديد موقعك يدويًا.",
+    location_error_denied_ios: "الوصول إلى الموقع معطّل لهذا الموقع. اذهب إلى الإعدادات ← الخصوصية والأمان ← خدمات الموقع ← مواقع Safari وفعّله — أو اضغط على الخريطة لتحديد موقعك يدويًا.",
+    location_error_denied_android: "الوصول إلى الموقع معطّل لهذا الموقع. اضغط على أيقونة القفل/المعلومات بجانب شريط العنوان ← الأذونات ← الموقع وفعّله — أو اضغط على الخريطة لتحديد موقعك يدويًا.",
     location_error_unavailable: "تعذّر تحديد موقعك — تأكد من تفعيل خدمة الموقع (GPS) في المتصفح. يمكنك أيضًا الضغط على الخريطة لتحديد موقعك يدويًا.",
     location_error_timeout: "تحديد موقعك يستغرق وقتًا طويلاً. يمكنك المحاولة مرة أخرى، أو الضغط على الخريطة لتحديد موقعك يدويًا.",
     location_error_insecure: "المشاركة المباشرة للموقع تعمل فقط على صفحة آمنة (https). يمكنك الضغط على الخريطة لتحديد موقعك يدويًا."
@@ -2125,6 +2129,8 @@ const translations = {
     error_generic: "شتێک هەڵە بوو. دووبارە هەوڵبدەرەوە.", error_login_required: "تکایە سەرەتا وەک ئەدمین بچۆرەژوورەوە.",
     location_shared: "شوێنی ڕاستەقینە زیادکرا", location_manual: "نیشانەیەک لەسەر نەخشە دانرا",
     location_error_denied: "ڕێگەپێدانی شوێن بۆ ئەم ماڵپەڕە داخراوە. لە ڕێکخستنەکانی وێبگەڕەکەت چالاکی بکە، یان کرتە لەسەر نەخشەکە بکە بۆ دانانی نیشانە بە دەست.",
+    location_error_denied_ios: "ڕێگەپێدانی شوێن بۆ ئەم ماڵپەڕە داخراوە. بڕۆ بۆ ڕێکخستنەکان ← تایبەتمەندی و ئاسایش ← خزمەتگوزارییەکانی شوێن ← ماڵپەڕەکانی Safari و چالاکی بکە — یان کرتە لەسەر نەخشەکە بکە بۆ دانانی نیشانە بە دەست.",
+    location_error_denied_android: "ڕێگەپێدانی شوێن بۆ ئەم ماڵپەڕە داخراوە. کرتە لەسەر ئایکۆنی قفل/زانیاری لەتەنیشت هێڵی ناونیشان بکە ← ڕێگەپێدانەکان ← شوێن و چالاکی بکە — یان کرتە لەسەر نەخشەکە بکە بۆ دانانی نیشانە بە دەست.",
     location_error_unavailable: "نەمانتوانی شوێنەکەت بدۆزینەوە — دڵنیابەرەوە کە GPS/خزمەتگوزاری شوێن لە وێبگەڕەکەت چالاکە. هەروەها دەتوانیت کرتە لەسەر نەخشەکە بکەیت بۆ دانانی نیشانە بە دەست.",
     location_error_timeout: "دۆزینەوەی شوێنەکەت زۆر کات دەخایەنێت. دەتوانیت دووبارە هەوڵبدەیتەوە، یان کرتە لەسەر نەخشەکە بکەیت بۆ دانانی نیشانە بە دەست.",
     location_error_insecure: "بەشکردنی شوێنی ڕاستەقینە تەنها لەسەر پەڕەیەکی سەلامەت (https) کار دەکات. دەتوانیت کرتە لەسەر نەخشەکە بکەیت بۆ دانانی نیشانە بە دەست."
@@ -2251,8 +2257,10 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeSidebar(); 
 
 /* ---------- Page routing ---------- */
 const ADMIN_ONLY_PAGES = ["reservations"];
+let currentPageId = "home";
 function showPage(pageId){
   if(ADMIN_ONLY_PAGES.includes(pageId) && !isAdmin()) pageId = "login";
+  currentPageId = pageId;
   document.querySelectorAll(".page").forEach(p=> p.classList.remove("active"));
   const target = document.getElementById("page-"+pageId);
   if(target) target.classList.add("active");
@@ -2266,6 +2274,31 @@ function showPage(pageId){
   if(pageId === "reservations") loadReservations();
   if(pageId === "donate") loadInbox();
 }
+
+/* ---------- Live-ish updates ----------
+   Nobody wants to hit refresh to see whether a new reservation or
+   donation came in, or whether another admin/tab already changed
+   something. Every few seconds, while the tab is actually visible,
+   quietly re-fetch whatever list is on screen (through the exact same
+   secure calls used everywhere else — no new backend access, nothing
+   bypasses the admin-password gate) and re-render it in place. Errors
+   during a background refresh are swallowed rather than shown as a
+   toast — a flaky connection shouldn't nag the person every few
+   seconds; the next tick just tries again. */
+const POLL_INTERVAL_MS = 8000;
+function pollTick(){
+  if(document.visibilityState !== "visible") return;
+  if(document.querySelector(".modal-overlay.show[id^='add']")) return; // don't yank the grid out from under an open add-item form
+  // The pending-reservations badge lives in the sidebar, visible from every
+  // page, so keep it (and the list behind it) fresh regardless of which
+  // page is open — not just while sitting on the reservations page.
+  if(isAdmin()) loadReservations(true);
+  if(currentPageId === "clothes") loadClothes(true);
+  else if(currentPageId === "extra") loadExtra(true);
+  else if(currentPageId === "donate" && isAdmin()) loadInbox(true);
+  else if(currentPageId === "about") loadSettings(true);
+}
+setInterval(pollTick, POLL_INTERVAL_MS);
 document.querySelectorAll("[data-page]").forEach(btn=>{
   btn.addEventListener("click", ()=> showPage(btn.getAttribute("data-page")));
 });
@@ -2493,9 +2526,9 @@ let activeGroup = "all";
 let activeAge = "all";
 let activeType = "all";
 
-async function loadClothes(){
+async function loadClothes(silent){
   const { data, error } = await db.from("clothing_items").select("*").order("created_at", { ascending: false });
-  if(error){ showToast(friendlyError(error), true); return; }
+  if(error){ if(!silent) showToast(friendlyError(error), true); return; }
   cachedClothes = data || [];
   renderClothesGroupTabs();
   renderClothesAgeRow();
@@ -2680,9 +2713,9 @@ async function adjustClothesStock(id, delta){
 /* ---------- Extra items ---------- */
 let cachedExtra = [];
 
-async function loadExtra(){
+async function loadExtra(silent){
   const { data, error } = await db.from("extra_items").select("*").order("created_at", { ascending: false });
-  if(error){ showToast(friendlyError(error), true); return; }
+  if(error){ if(!silent) showToast(friendlyError(error), true); return; }
   cachedExtra = data || [];
   renderExtraGrid();
 }
@@ -2908,6 +2941,15 @@ function openReserveModal(source, itemId, label){
   });
 }
 
+// Phones (iOS Safari especially) are far stricter about geolocation than a
+// desktop browser: a true GPS lock (enableHighAccuracy) can take a long
+// time or simply time out indoors/on cellular, on top of the OS-level
+// permission prompts being pickier to begin with. So on the first try we
+// ask for coarse, network/cell-tower based positioning — it resolves in
+// under a second in most cases and is plenty accurate for a delivery
+// address — and only fall back to a true GPS fix if that somehow times
+// out. maximumAge lets the browser hand back a recent cached fix instead
+// of doing a fresh lookup every single tap.
 function locateMe(highAccuracy){
   const btn = document.getElementById("locateMeBtn");
   const label = btn.querySelector("span");
@@ -2947,14 +2989,14 @@ function locateMe(highAccuracy){
       // fallback) is a lot more useful than one generic error toast,
       // especially on a phone where they can't see a console.
       if(err && err.code === 1){
-        showToast(t("location_error_denied"), true);
+        showToast(locationDeniedMessage(), true);
       }else if(err && err.code === 3){
-        // A first attempt with GPS-accurate positioning can time out
-        // indoors or on a slow mobile connection. Retry once automatically
-        // with coarser (network/cell-tower based) positioning, which is
-        // faster and usually still good enough to find the right street.
-        if(highAccuracy){
-          locateMe(false);
+        // The fast, coarse attempt almost never times out — but if it
+        // does, one more try with a true GPS fix (longer timeout, since
+        // this is now the fallback, not the first thing the person waits on)
+        // is worth attempting before giving up.
+        if(!highAccuracy){
+          locateMe(true);
         }else{
           showToast(t("location_error_timeout"), true);
         }
@@ -2962,11 +3004,23 @@ function locateMe(highAccuracy){
         showToast(t("location_error_unavailable"), true);
       }
     },
-    { enableHighAccuracy: highAccuracy, timeout: highAccuracy ? 12000 : 20000, maximumAge: 60000 }
+    { enableHighAccuracy: highAccuracy, timeout: highAccuracy ? 15000 : 8000, maximumAge: 300000 }
   );
 }
 
-document.getElementById("locateMeBtn").addEventListener("click", ()=> locateMe(true));
+// iOS and Android hide the location toggle for a single site in different
+// places; a phone that's already denied it once won't get a second native
+// prompt, so telling people exactly where to go to fix it matters far more
+// here than on a desktop browser.
+function locationDeniedMessage(){
+  const ua = navigator.userAgent || "";
+  const isIOS = /iPhone|iPad|iPod/.test(ua) || (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
+  if(isIOS) return t("location_error_denied_ios");
+  if(/Android/.test(ua)) return t("location_error_denied_android");
+  return t("location_error_denied");
+}
+
+document.getElementById("locateMeBtn").addEventListener("click", ()=> locateMe(false));
 
 document.getElementById("reserveForm").addEventListener("submit", async e=>{
   e.preventDefault();
@@ -3002,7 +3056,7 @@ let cachedReservations = [];
 let currentReservationId = null;
 let reservationDetailMap = null, reservationDetailMarker = null;
 
-async function loadReservations(){
+async function loadReservations(silent){
   if(!isAdmin()) return;
   try{
     const data = await adminCall("admin_list_reservations", {});
@@ -3010,7 +3064,7 @@ async function loadReservations(){
     renderReservationsCached();
     updateReservationsBadge();
   }catch(err){
-    showToast(friendlyError(err), true);
+    if(!silent) showToast(friendlyError(err), true);
   }
 }
 function renderReservationsCached(){
@@ -3116,9 +3170,9 @@ document.getElementById("reservationDeleteBtn").addEventListener("click", async 
 /* ---------- Site settings (About text + Donate phone) ---------- */
 let cachedSettings = { about_text: null, donate_phone: null };
 
-async function loadSettings(){
+async function loadSettings(silent){
   const { data, error } = await db.from("site_settings").select("*");
-  if(error){ showToast(friendlyError(error), true); return; }
+  if(error){ if(!silent) showToast(friendlyError(error), true); return; }
   (data || []).forEach(row=> { cachedSettings[row.key] = row.value; });
   renderAboutView();
   renderDonatePhone();
@@ -3203,13 +3257,13 @@ document.getElementById("donateForm").addEventListener("submit", async e=>{
 });
 
 let cachedInbox = [];
-async function loadInbox(){
+async function loadInbox(silent){
   if(!isAdmin()) return;
   try{
     cachedInbox = await adminCall("admin_list_donations", {});
     renderInboxCached();
   }catch(err){
-    showToast(friendlyError(err), true);
+    if(!silent) showToast(friendlyError(err), true);
   }
 }
 function renderInboxCached(){

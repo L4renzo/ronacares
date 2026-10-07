@@ -1115,6 +1115,14 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
 .locate-btn{display:flex;align-items:center;gap:8px;width:100%;justify-content:center;margin-bottom:14px;}
 .locate-btn svg{width:16px;height:16px;}
 
+/* How many of the three allowed items this phone number has left. */
+.allowance-note{
+  display:none;font-size:12.5px;line-height:1.55;margin:7px 0 0;font-weight:700;
+}
+.allowance-note.show{display:block;}
+.allowance-note.ok{color:#1f7a4d;}
+.allowance-note.none{color:var(--danger,#b3261e);}
+
 /* "Set from the photo" note under the Type dropdown. */
 .auto-type-note{
   display:none;font-size:12.5px;line-height:1.55;margin:7px 0 0;color:var(--muted);
@@ -1565,7 +1573,7 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
 <div class="modal-overlay" id="addClothesModal">
   <div class="modal-box">
     <div class="modal-header">
-      <h2 data-i18n="add_item_btn"></h2>
+      <h2 id="addClothesTitle" data-i18n="add_item_btn"></h2>
       <button class="modal-close" data-close="addClothesModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <form id="addClothesForm">
@@ -1634,7 +1642,7 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
 <div class="modal-overlay" id="addExtraModal">
   <div class="modal-box">
     <div class="modal-header">
-      <h2 data-i18n="add_item_btn"></h2>
+      <h2 id="addExtraTitle" data-i18n="add_item_btn"></h2>
       <button class="modal-close" data-close="addExtraModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <form id="addExtraForm">
@@ -1704,6 +1712,7 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
     </div>
 
     <div class="modal-actions admin-only show-flex" style="margin-top:14px">
+      <button class="btn btn-outline btn-block" id="detailEditBtn" data-i18n="edit_btn"></button>
       <button class="btn btn-danger btn-block" id="detailDeleteBtn" data-i18n="delete_btn"></button>
     </div>
   </div>
@@ -1716,7 +1725,8 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
       <h2 data-i18n="reserve_title"></h2>
       <button class="modal-close" data-close="reserveModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <p style="font-size:13px;color:var(--muted);margin:-8px 0 16px" id="reserveItemLabel"></p>
+    <p style="font-size:13px;color:var(--muted);margin:-8px 0 6px" id="reserveItemLabel"></p>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 16px" data-i18n="reserve_limit_hint"></p>
     <form id="reserveForm">
       <div class="field">
         <label data-i18n="form_name"></label>
@@ -1725,6 +1735,10 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
       <div class="field">
         <label data-i18n="form_contact"></label>
         <input type="tel" id="reservePhone" data-i18n-placeholder="reserve_phone_placeholder" required>
+        <!-- How many of the three this number has left, looked up once the
+             number is typed so nobody fills in the whole form only to be
+             turned away at the end. -->
+        <p class="allowance-note" id="reserveAllowance"></p>
       </div>
 
       <div class="field">
@@ -1880,13 +1894,18 @@ const CATEGORY_GROUPS = [
 ];
 
 const CLOTHING_TYPES = [
-  { key: "sweater", labelKey: "type_sweater" },
-  { key: "tshirt",  labelKey: "type_tshirt" },
-  { key: "pants",   labelKey: "type_pants" },
-  { key: "jacket",  labelKey: "type_jacket" },
-  { key: "scarf",   labelKey: "type_scarf" },
-  { key: "shoes",   labelKey: "type_shoes" },
-  { key: "other",   labelKey: "type_other" }
+  { key: "tshirt",     labelKey: "type_tshirt" },
+  { key: "longsleeve", labelKey: "type_longsleeve" },
+  { key: "sweater",    labelKey: "type_sweater" },
+  { key: "hoodie",     labelKey: "type_hoodie" },
+  { key: "jacket",     labelKey: "type_jacket" },
+  { key: "pants",      labelKey: "type_pants" },
+  { key: "dress",      labelKey: "type_dress" },
+  { key: "skirt",      labelKey: "type_skirt" },
+  { key: "scarf",      labelKey: "type_scarf" },
+  { key: "socks",      labelKey: "type_socks" },
+  { key: "shoes",      labelKey: "type_shoes" },
+  { key: "other",      labelKey: "type_other" }
 ];
 
 const SIZES = ["XXS","XS","S","M","L","XL","XXL"];
@@ -1897,9 +1916,9 @@ const SIZES = ["XXS","XS","S","M","L","XL","XXL"];
 // specific chart exists, so this follows the standard international
 // children's-wear age banding used by those brands.
 const AGE_BANDS = [
-  "0-3m","3-6m","6-9m","9-12m",
-  "1-2y","2-3y","3-4y","4-5y","5-6y","6-7y","7-8y",
-  "9-10y","11-12y","13-14y","15-16y"
+  "0-3m","3-6m","6-9m","9-12m","12-18m","18-24m",
+  "1-2y","2-3y","3-4y","4-5y","5-6y","6-7y","7-8y","8-9y",
+  "9-10y","10-11y","11-12y","12-13y","13-14y","14-15y","15-16y"
 ];
 
 const translations = {
@@ -1931,6 +1950,8 @@ const translations = {
     filter_all: "All", add_item_btn: "Add Item",
     empty_clothes: "No items here yet. Check back soon!",
     type_sweater: "Sweaters", type_tshirt: "T-Shirts", type_pants: "Pants",
+    type_longsleeve: "Long-Sleeve Shirts", type_hoodie: "Hoodies",
+    type_dress: "Dresses", type_skirt: "Skirts", type_socks: "Socks",
     type_jacket: "Jackets & Coats", type_scarf: "Scarves & Accessories",
     type_shoes: "Shoes", type_other: "Other",
     size_label: "Size", listed_by_label: "Listed by (optional)",
@@ -2000,6 +2021,11 @@ const translations = {
     auto_type_checking: "Looking at the photo…",
     auto_type_set: "Type set from the photo — change it if it's wrong.",
     auto_type_unsure: "Couldn't tell from the photo — please pick the type yourself.",
+    edit_btn: "Edit", edit_item_title: "Edit Item", item_updated_toast: "Item updated",
+    reserve_limit_hint: "Each person can reserve up to 3 items in total.",
+    allowance_left: "You can still reserve {n} of {max} items.",
+    allowance_none: "This number has already reserved {max} items — that's the limit.",
+    error_limit_reached: "That's {max} items already reserved on this number. Please contact us if you need more.",
     check_title: "Before saving — does this look right?",
     save_anyway_btn: "Save anyway",
     check_no_photo: "No photo added. Items with a photo get picked up far more often.",
@@ -2067,6 +2093,8 @@ const translations = {
     filter_all: "الكل", add_item_btn: "إضافة قطعة",
     empty_clothes: "لا توجد أغراض بعد. تفقد الصفحة قريباً!",
     type_sweater: "سترات صوفية", type_tshirt: "تيشيرتات", type_pants: "بناطيل",
+    type_longsleeve: "قمصان بأكمام طويلة", type_hoodie: "هوديات",
+    type_dress: "فساتين", type_skirt: "تنانير", type_socks: "جوارب",
     type_jacket: "جاكيتات ومعاطف", type_scarf: "أوشحة وإكسسوارات",
     type_shoes: "أحذية", type_other: "أخرى",
     size_label: "المقاس", listed_by_label: "أُدرجت بواسطة (اختياري)",
@@ -2136,6 +2164,11 @@ const translations = {
     auto_type_checking: "جارٍ فحص الصورة…",
     auto_type_set: "تم تحديد النوع من الصورة — غيّره إن كان خطأ.",
     auto_type_unsure: "تعذّر التعرّف من الصورة — يرجى اختيار النوع بنفسك.",
+    edit_btn: "تعديل", edit_item_title: "تعديل القطعة", item_updated_toast: "تم تحديث القطعة",
+    reserve_limit_hint: "يمكن لكل شخص حجز 3 قطع كحد أقصى.",
+    allowance_left: "ما زال بإمكانك حجز {n} من أصل {max} قطع.",
+    allowance_none: "هذا الرقم حجز {max} قطع بالفعل — هذا هو الحد الأقصى.",
+    error_limit_reached: "تم حجز {max} قطع على هذا الرقم بالفعل. يرجى التواصل معنا إذا كنت بحاجة إلى المزيد.",
     check_title: "قبل الحفظ — هل هذا صحيح؟",
     save_anyway_btn: "احفظ على أي حال",
     check_no_photo: "لم تُضف صورة. القطع التي لها صورة تُحجز أكثر بكثير.",
@@ -2203,6 +2236,8 @@ const translations = {
     filter_all: "هەموو", add_item_btn: "زیادکردنی کەلوپەل",
     empty_clothes: "هێشتا هیچ کەلوپەلێک لێرە نییە. دواتر سەردانی بکەرەوە!",
     type_sweater: "سویتەر", type_tshirt: "تیشێرت", type_pants: "پانتۆڵ",
+    type_longsleeve: "کراسی قۆڵ درێژ", type_hoodie: "هودی",
+    type_dress: "کراس", type_skirt: "دامێن", type_socks: "گۆرەوی",
     type_jacket: "جاکێت و کۆت", type_scarf: "شاڵ و ئاکسسوار",
     type_shoes: "پێڵاو", type_other: "هی تر",
     size_label: "قەبارە", listed_by_label: "زیادکراو لەلایەن (ئارەزوومەندانە)",
@@ -2272,6 +2307,11 @@ const translations = {
     auto_type_checking: "سەیری وێنەکە دەکرێت…",
     auto_type_set: "جۆرەکە لە وێنەکەوە دیاری کرا — ئەگەر هەڵەیە بیگۆڕە.",
     auto_type_unsure: "لە وێنەکەوە نەزانرا — تکایە خۆت جۆرەکە هەڵبژێرە.",
+    edit_btn: "دەستکاری", edit_item_title: "دەستکاریکردنی کەلوپەل", item_updated_toast: "کەلوپەلەکە نوێکرایەوە",
+    reserve_limit_hint: "هەر کەسێک دەتوانێت تەنها ٣ کەلوپەل داوا بکات.",
+    allowance_left: "هێشتا دەتوانیت {n} لە {max} کەلوپەل داوا بکەیت.",
+    allowance_none: "ئەم ژمارەیە پێشتر {max} کەلوپەلی داوا کردووە — ئەمە سنوورەکەیە.",
+    error_limit_reached: "پێشتر {max} کەلوپەل لەسەر ئەم ژمارەیە داوا کراوە. ئەگەر زیاترت دەوێت تکایە پەیوەندیمان پێوە بکە.",
     check_title: "پێش پاشەکەوتکردن — ئایا ئەمە ڕاستە؟",
     save_anyway_btn: "بەهەرحاڵ پاشەکەوتی بکە",
     check_no_photo: "هیچ وێنەیەک زیاد نەکراوە. ئەو کەلوپەلانەی وێنەیان هەیە زۆر زیاتر داوا دەکرێن.",
@@ -2358,6 +2398,8 @@ function friendlyError(err){
   // between this page loading and the Reserve button being tapped.
   if(msg.includes("out of stock")) return t("error_out_of_stock");
   if(msg.includes("no longer exists")) return t("error_item_gone");
+  // The three-per-person cap, refused by submit_reservation.
+  if(msg.includes("reservation limit reached")) return t("error_limit_reached");
   return t("error_generic");
 }
 
@@ -2471,7 +2513,11 @@ function showPage(pageId){
 const POLL_INTERVAL_MS = 8000;
 function pollTick(){
   if(document.visibilityState !== "visible") return;
-  if(document.querySelector(".modal-overlay.show[id^='add']")) return; // don't yank the grid out from under an open add-item form
+  // Any open modal is holding a reference to an item object from these
+  // arrays — the detail view, an edit form mid-change, the reserve form.
+  // Refetching swaps the arrays for new ones, so those references would go
+  // stale underneath whoever is looking at them. Wait until they're done.
+  if(document.querySelector(".modal-overlay.show")) return;
   // The pending-reservations badge lives in the sidebar, visible from every
   // page, so keep it (and the list behind it) fresh regardless of which
   // page is open — not just while sitting on the reservations page.
@@ -2650,10 +2696,14 @@ const PHOTO_TYPE_MIN_CONFIDENCE = 0.20;
 // before the looser "shirt". Words are matched as substrings of the
 // lower-cased label.
 const PHOTO_TYPE_HINTS = [
+  { type:"socks",   words:["sock","stocking"] },
   { type:"shoes",   words:["running shoe","sneaker","sandal","loafer","clog","boot","shoe","moccasin"] },
   { type:"scarf",   words:["stole","feather boa","scarf","shawl","muffler"] },
+  { type:"hoodie",  words:["hoodie","hooded sweatshirt"] },
   { type:"sweater", words:["sweatshirt","cardigan","sweater","jumper","pullover","wool","knit"] },
   { type:"jacket",  words:["trench coat","fur coat","lab coat","coat","suit","poncho","parka","anorak","blazer","windbreaker","jacket","vest"] },
+  { type:"skirt",   words:["miniskirt","overskirt","hoopskirt","skirt"] },
+  { type:"dress",   words:["gown","dress","kimono","abaya"] },
   { type:"pants",   words:["jean","denim","trouser","pants","leggings","shorts"] },
   { type:"tshirt",  words:["t-shirt","tee shirt","tshirt","jersey","polo","shirt"] }
 ];
@@ -2661,12 +2711,20 @@ const PHOTO_TYPE_HINTS = [
 // Pure function — given the model's guesses, decide on a type (or nothing).
 // Probabilities for labels that fold into the same type are added together,
 // so three different coat labels at 0.1 each count as a confident jacket.
+// Whole-word matching, not a plain substring test: "dresser" is a chest of
+// drawers, not a dress, and "socket" is not a sock. Phrases like
+// "running shoe" still work — the boundaries are only checked at the ends.
+function labelMentions(label, word){
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp("(^|[^a-z0-9])" + escaped + "($|[^a-z0-9])", "i").test(label);
+}
+
 function typeFromPredictions(preds){
   const scores = {};
   (preds || []).forEach(p=>{
     const label = String(p.className || "").toLowerCase();
     for(const hint of PHOTO_TYPE_HINTS){
-      if(hint.words.some(w=> label.includes(w))){
+      if(hint.words.some(w=> labelMentions(label, w))){
         scores[hint.type] = (scores[hint.type] || 0) + (p.probability || 0);
         break;
       }
@@ -2719,6 +2777,11 @@ function blobToImage(blob){
 }
 
 let clothesTypeChosenByHand = false;
+// Bumped every time the add/edit form is opened. A photo lookup captures
+// the value at the moment it starts and throws its answer away if the form
+// has been reopened since — otherwise a slow guess about a photo from an
+// abandoned form lands in whatever form is open when it finally resolves.
+let clothesFormGeneration = 0;
 function setTypeNote(key, done){
   const note = document.getElementById("clothesTypeNote");
   if(!note) return;
@@ -2732,20 +2795,24 @@ async function guessTypeFromPhoto(blob){
   // Someone who already picked the type themselves shouldn't have it
   // changed under them.
   if(clothesTypeChosenByHand) return;
+  const generation = clothesFormGeneration;
+  const stale = ()=> generation !== clothesFormGeneration || clothesTypeChosenByHand;
   try{
     setTypeNote("auto_type_checking", false);
     const model = await loadPhotoModel();
+    if(stale()) return;                       // different form now — say nothing
     if(!model){ setTypeNote(null); return; }
-    if(clothesTypeChosenByHand){ setTypeNote(null); return; }
     const img = await blobToImage(blob);
-    const guess = typeFromPredictions(await model.classify(img, 10));
-    if(!guess || clothesTypeChosenByHand){ setTypeNote(guess ? null : "auto_type_unsure", false); return; }
+    const preds = await model.classify(img, 10);
+    if(stale()) return;
+    const guess = typeFromPredictions(preds);
+    if(!guess){ setTypeNote("auto_type_unsure", false); return; }
     const select = document.getElementById("clothesTypeSelect");
     if(select) select.value = guess.type;
     setTypeNote("auto_type_set", true);
   }catch(err){
     console.warn("Photo type detection failed:", err);
-    setTypeNote(null);
+    if(!stale()) setTypeNote(null);
   }
 }
 
@@ -2780,8 +2847,27 @@ function wirePhotoPicker(inputId, previewId, folderPrefix, onFirstPhoto){
       }
     }
   });
+  // Builds the same thumbnail (with its remove button) for a photo that's
+  // already saved on an item being edited, so editing starts from what the
+  // item actually has rather than from an empty row.
+  function addExistingThumb(url){
+    const thumb = document.createElement("div");
+    thumb.className = "photo-thumb";
+    thumb.innerHTML = '<img src="'+escapeHTML(url)+'" alt="">' +
+      '<button type="button" aria-label="remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+    thumb.querySelector("button").addEventListener("click", ()=>{
+      state.photos = state.photos.filter(u=> u !== url);
+      thumb.remove();
+    });
+    preview.appendChild(thumb);
+  }
+
   function reset(){ state.photos = []; preview.innerHTML = ""; }
-  return { state, reset };
+  function load(photos){
+    reset();
+    (photos || []).forEach(url=>{ state.photos.push(url); addExistingThumb(url); });
+  }
+  return { state, reset, load };
 }
 const clothesPhotoPicker = wirePhotoPicker("clothesPhotoInput", "clothesPhotoPreview", "clothing", guessTypeFromPhoto);
 const extraPhotoPicker = wirePhotoPicker("extraPhotoInput", "extraPhotoPreview", "extra");
@@ -2950,7 +3036,31 @@ function renderClothesGrid(){
 }
 
 /* ---------- Clothes: add / delete ---------- */
+/* The add form doubles as the edit form. clothesEditingId holds the id of
+   the item being changed, or null when something new is being added — it's
+   what decides whether saving inserts or updates, and it gets cleared on
+   every open so a previous edit can't leak into the next add. */
+let clothesEditingId = null;
+// What the stock stepper showed when an edit form opened. Sent back on
+// save so the database applies the *change* the admin made rather than
+// the absolute number, which would otherwise wipe out any reservation
+// that came in while the form sat open. See 0008_fixes.sql.
+let clothesEditingPrevStock = null;
+
+// Both modal titles carry a data-i18n attribute, so switching mode has to
+// change the attribute too — otherwise changing language mid-edit would
+// put the "Add" wording back on an edit form.
+function setModalTitle(id, key){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.setAttribute("data-i18n", key);
+  el.textContent = t(key);
+}
+
 function openAddClothesModal(){
+  clothesEditingId = null;
+  clothesEditingPrevStock = null;
+  clothesFormGeneration++;
   document.getElementById("addClothesForm").reset();
   clothesPhotoPicker.reset();
   document.getElementById("clothesStockValue").textContent = "1";
@@ -2960,6 +3070,42 @@ function openAddClothesModal(){
   hideFormWarnings("clothesWarnings");
   clothesTypeChosenByHand = false;
   setTypeNote(null);
+  setModalTitle("addClothesTitle", "add_item_btn");
+  openModal("addClothesModal");
+}
+
+function openEditClothesModal(item){
+  clothesEditingId = item.id;
+  clothesEditingPrevStock = item.stock != null ? item.stock : 0;
+  clothesFormGeneration++;
+  document.getElementById("addClothesForm").reset();
+  renderStaticFormOptions();
+  document.getElementById("clothesGroupSelect").value = item.category_group;
+  document.getElementById("clothesTypeSelect").value = item.type;
+  // If this item carries an age band the dropdown doesn't list (older
+  // data, or a row added straight in the database), add it as an option
+  // rather than letting the select fall blank and then save that blank
+  // back over a perfectly good value.
+  const ageSelect = document.getElementById("clothesAgeSelect");
+  if(item.age_band && !Array.from(ageSelect.options).some(o=> o.value === item.age_band)){
+    const opt = document.createElement("option");
+    opt.value = item.age_band;
+    opt.textContent = formatAgeBand(item.age_band);
+    ageSelect.appendChild(opt);
+  }
+  ageSelect.value = item.age_band || "";
+  document.getElementById("clothesStockValue").textContent = String(item.stock != null ? item.stock : 0);
+  document.getElementById("clothesListedBy").value = item.listed_by || "";
+  document.getElementById("clothesCondition").value = item.condition_notes || "";
+  selectedClothesSize = item.size || "M";
+  renderClothesSizeRow();
+  clothesPhotoPicker.load(item.photos);
+  hideFormWarnings("clothesWarnings");
+  // The type is already set deliberately on an existing item, so the photo
+  // guesser must not touch it even if a new photo is added mid-edit.
+  clothesTypeChosenByHand = true;
+  setTypeNote(null);
+  setModalTitle("addClothesTitle", "edit_item_title");
   openModal("addClothesModal");
 }
 document.getElementById("openAddClothesBtn").addEventListener("click", openAddClothesModal);
@@ -3017,7 +3163,10 @@ function clothesFormWarnings(){
     out.push(t("check_kid_baby_age").replace("{age}", formatAgeBand(age)));
   }
 
+  // When editing, the item being edited obviously matches itself — only a
+  // *different* item counts as a duplicate.
   const twin = cachedClothes.find(i=>
+    i.id !== clothesEditingId &&
     i.category_group === group && i.type === type && i.age_band === age && i.size === size);
   if(twin){
     out.push(t("check_duplicate")
@@ -3029,9 +3178,10 @@ function clothesFormWarnings(){
 
 async function saveClothesItem(){
   const btn = document.getElementById("clothesSubmitBtn");
+  const editing = clothesEditingId;   // read once — the modal closes below
   btn.disabled = true;
   try{
-    await adminCall("admin_insert_clothing_item", {
+    const fields = {
       p_category_group: document.getElementById("clothesGroupSelect").value,
       p_type: document.getElementById("clothesTypeSelect").value,
       p_size: selectedClothesSize,
@@ -3040,10 +3190,16 @@ async function saveClothesItem(){
       p_listed_by: document.getElementById("clothesListedBy").value.trim() || null,
       p_condition_notes: document.getElementById("clothesCondition").value.trim() || null,
       p_photos: clothesPhotoPicker.state.photos.slice()
-    });
+    };
+    if(editing){
+      await adminCall("admin_update_clothing_item",
+        Object.assign({ p_id: editing, p_prev_stock: clothesEditingPrevStock }, fields));
+    }else{
+      await adminCall("admin_insert_clothing_item", fields);
+    }
     hideFormWarnings("clothesWarnings");
     closeModal("addClothesModal");
-    showToast(t("item_added_toast"));
+    showToast(t(editing ? "item_updated_toast" : "item_added_toast"));
     loadClothes();
   }catch(err){
     showToast(friendlyError(err), true);
@@ -3133,11 +3289,32 @@ function renderExtraGrid(){
   });
 }
 
+let extraEditingId = null;
+let extraEditingPrevStock = null;
+
 function openAddExtraModal(){
+  extraEditingId = null;
+  extraEditingPrevStock = null;
   document.getElementById("addExtraForm").reset();
   extraPhotoPicker.reset();
   document.getElementById("extraStockValue").textContent = "1";
   hideFormWarnings("extraWarnings");
+  setModalTitle("addExtraTitle", "add_item_btn");
+  openModal("addExtraModal");
+}
+
+function openEditExtraModal(item){
+  extraEditingId = item.id;
+  extraEditingPrevStock = item.stock != null ? item.stock : 0;
+  document.getElementById("addExtraForm").reset();
+  document.getElementById("extraDesc").value = item.title || "";
+  document.getElementById("extraSize").value = item.size || "";
+  document.getElementById("extraStockValue").textContent = String(item.stock != null ? item.stock : 0);
+  document.getElementById("extraListedBy").value = item.listed_by || "";
+  document.getElementById("extraCondition").value = item.condition_notes || "";
+  extraPhotoPicker.load(item.photos);
+  hideFormWarnings("extraWarnings");
+  setModalTitle("addExtraTitle", "edit_item_title");
   openModal("addExtraModal");
 }
 document.getElementById("openAddExtraBtn").addEventListener("click", openAddExtraModal);
@@ -3151,7 +3328,8 @@ function extraFormWarnings(){
   if(stock <= 0) out.push(t("check_zero_stock"));
   if(stock > 50) out.push(t("check_big_stock").replace("{n}", stock));
   if(title.length < 3) out.push(t("check_short_title"));
-  const twin = cachedExtra.find(i=> (i.title || "").trim().toLowerCase() === title.toLowerCase());
+  const twin = cachedExtra.find(i=>
+    i.id !== extraEditingId && (i.title || "").trim().toLowerCase() === title.toLowerCase());
   if(twin){
     out.push(t("check_duplicate").replace("{item}", twin.title).replace("{n}", twin.stock));
   }
@@ -3160,19 +3338,26 @@ function extraFormWarnings(){
 
 async function saveExtraItem(){
   const btn = document.getElementById("extraSubmitBtn");
+  const editing = extraEditingId;
   btn.disabled = true;
   try{
-    await adminCall("admin_insert_extra_item", {
+    const fields = {
       p_title: document.getElementById("extraDesc").value.trim(),
       p_size: document.getElementById("extraSize").value.trim() || null,
       p_stock: parseInt(document.getElementById("extraStockValue").textContent, 10) || 0,
       p_listed_by: document.getElementById("extraListedBy").value.trim() || null,
       p_condition_notes: document.getElementById("extraCondition").value.trim() || null,
       p_photos: extraPhotoPicker.state.photos.slice()
-    });
+    };
+    if(editing){
+      await adminCall("admin_update_extra_item",
+        Object.assign({ p_id: editing, p_prev_stock: extraEditingPrevStock }, fields));
+    }else{
+      await adminCall("admin_insert_extra_item", fields);
+    }
     hideFormWarnings("extraWarnings");
     closeModal("addExtraModal");
-    showToast(t("item_added_toast"));
+    showToast(t(editing ? "item_updated_toast" : "item_added_toast"));
     loadExtra();
   }catch(err){
     showToast(friendlyError(err), true);
@@ -3317,6 +3502,16 @@ document.getElementById("detailReserveBtn").addEventListener("click", ()=>{
   openReserveModal(source, item.id, label);
 });
 
+document.getElementById("detailEditBtn").addEventListener("click", ()=>{
+  if(!currentDetail.id || !isAdmin()) return;
+  const list = currentDetail.source === "clothes" ? cachedClothes : cachedExtra;
+  const item = list.find(i=> i.id === currentDetail.id);
+  if(!item){ showToast(t("error_item_gone"), true); return; }
+  closeModal("itemDetailModal");
+  if(currentDetail.source === "clothes") openEditClothesModal(item);
+  else openEditExtraModal(item);
+});
+
 document.getElementById("detailDeleteBtn").addEventListener("click", ()=>{
   if(!currentDetail.id) return;
   if(!confirm(t("confirm_delete"))) return;
@@ -3340,11 +3535,56 @@ function ensureReserveMap(){
   reserveMap.on("click", e=> setReserveMarker(e.latlng.lat, e.latlng.lng, "manual"));
 }
 function setReserveMarker(lat, lng, note){
+  // Record the position first and unconditionally: these are what actually
+  // get submitted with the reservation. The pin on the map is only the
+  // picture of it, and if the map library never loaded we still want the
+  // location to reach us rather than throwing on the way.
   reserveLat = lat; reserveLng = lng; reserveLocationNote = note;
+  if(!reserveMap || !window.L) return;
   if(reserveMarker) reserveMarker.setLatLng([lat,lng]);
   else reserveMarker = L.marker([lat,lng]).addTo(reserveMap);
   reserveMap.setView([lat,lng], 15);
 }
+
+/* ---------- The three-items-per-person cap ----------
+   The real limit is enforced in the database, inside submit_reservation
+   (see 0007_limits_edit_and_types.sql), so a script posting straight to the
+   API is bound by it exactly like this form is. What's here is only the
+   courtesy half: look the number up as it's typed and say how many are
+   left, rather than letting someone fill in the whole form and a map pin
+   before being turned away. */
+const RESERVE_MAX_PER_PERSON = 3;
+let allowanceTimer = null;
+
+function setAllowanceNote(key, state, n){
+  const el = document.getElementById("reserveAllowance");
+  if(!el) return;
+  if(!key){ el.className = "allowance-note"; el.textContent = ""; return; }
+  el.textContent = t(key).replace("{n}", n).replace("{max}", RESERVE_MAX_PER_PERSON);
+  el.className = "allowance-note show " + state;
+}
+
+async function refreshAllowance(){
+  const phone = document.getElementById("reservePhone").value.trim();
+  if(phone.length < 4){ setAllowanceNote(null); return; }
+  try{
+    const { data, error } = await db.rpc("reservation_allowance", { p_phone: phone });
+    if(error) throw error;
+    const left = typeof data === "number" ? data : parseInt(data, 10);
+    if(isNaN(left)){ setAllowanceNote(null); return; }
+    if(left <= 0) setAllowanceNote("allowance_none", "none", 0);
+    else setAllowanceNote("allowance_left", "ok", left);
+  }catch(e){
+    // Not worth bothering anyone about — the database has the final say
+    // when they press the button anyway.
+    setAllowanceNote(null);
+  }
+}
+
+document.getElementById("reservePhone").addEventListener("input", ()=>{
+  clearTimeout(allowanceTimer);
+  allowanceTimer = setTimeout(refreshAllowance, 500);
+});
 
 function openReserveModal(source, itemId, label){
   reserveContext = { source, itemId, label };
@@ -3353,9 +3593,12 @@ function openReserveModal(source, itemId, label){
   reserveLat = null; reserveLng = null; reserveLocationNote = null;
   if(reserveMarker && reserveMap){ reserveMap.removeLayer(reserveMarker); reserveMarker = null; }
   hideLocateHelp();
+  clearTimeout(allowanceTimer);
+  setAllowanceNote(null);
   openModal("reserveModal");
   requestAnimationFrame(()=>{
     ensureReserveMap();
+    if(!reserveMap) return;   // map library didn't load; the form still works
     reserveMap.setView(ERBIL_CENTER, 12);
     setTimeout(()=> reserveMap.invalidateSize(), 60);
   });
@@ -3528,6 +3771,7 @@ document.getElementById("reserveForm").addEventListener("submit", async e=>{
     showToast(t("reserve_success_toast"));
   }catch(err){
     showToast(friendlyError(err), true);
+    refreshAllowance();   // they may have just used up their last one
     // Whether it was taken by someone else or the item was removed
     // outright, what's on screen is stale — pull the real numbers back in.
     if(reserveContext.source === "clothes") loadClothes(true); else loadExtra(true);
@@ -3745,7 +3989,7 @@ let cachedInbox = [];
 async function loadInbox(silent){
   if(!isAdmin()) return;
   try{
-    cachedInbox = await adminCall("admin_list_donations", {});
+    cachedInbox = (await adminCall("admin_list_donations", {})) || [];
     renderInboxCached();
   }catch(err){
     if(!silent) showToast(friendlyError(err), true);

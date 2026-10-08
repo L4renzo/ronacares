@@ -1115,6 +1115,54 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
 .locate-btn{display:flex;align-items:center;gap:8px;width:100%;justify-content:center;margin-bottom:14px;}
 .locate-btn svg{width:16px;height:16px;}
 
+
+/* ---------- "I'm not a robot" check ----------
+   A plain checkbox that decides from how it was clicked rather than by
+   making anyone read warped letters. See humanCheck() in the script for
+   what it actually looks at. */
+.hp-field{
+  /* Out of the layout and genuinely zero-sized, not just see-through —
+     the generic "input" styling sets width:100%, so these need to win.
+     Paired with tabindex="-1" and aria-hidden on the element itself, that
+     keeps it away from eyes, keyboards and screen readers alike. */
+  position:absolute !important;
+  width:0 !important;height:0 !important;
+  padding:0 !important;margin:0 !important;border:0 !important;
+  overflow:hidden;clip:rect(0 0 0 0);opacity:0;pointer-events:none;
+}
+.human-check{
+  display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;
+  background:var(--cream,#fdf8f4);border:1.5px solid var(--line,#e7dcd4);
+  border-radius:12px;padding:14px 16px;transition:border-color .15s, background .15s;
+}
+.human-check:hover{border-color:var(--maroon);}
+.human-check:focus-visible{outline:2px solid var(--maroon);outline-offset:2px;}
+.human-check-box{
+  flex:none;width:24px;height:24px;border-radius:6px;background:#fff;
+  border:2px solid var(--line,#cfc2b8);position:relative;transition:all .18s;
+}
+.human-check-mark{
+  position:absolute;inset:0;opacity:0;transform:scale(.6);transition:all .18s;
+  background:no-repeat center/14px url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+}
+.human-check-label{font-size:14px;font-weight:700;color:var(--ink);}
+.human-check.checking .human-check-box{
+  border-color:var(--gold);
+  background:conic-gradient(var(--gold) 0 25%,transparent 25% 100%);
+  animation:hc-spin .7s linear infinite;
+}
+@keyframes hc-spin{to{transform:rotate(360deg);}}
+.human-check.verified{border-color:#1f7a4d;background:#f0faf4;cursor:default;}
+.human-check.verified .human-check-box{background:#1f7a4d;border-color:#1f7a4d;animation:none;}
+.human-check.verified .human-check-mark{opacity:1;transform:scale(1);}
+.human-check.verified .human-check-label{color:#1f7a4d;}
+.human-check.failed{border-color:var(--danger,#b3261e);background:#fdf3f2;}
+.human-check.failed .human-check-label{color:var(--danger,#b3261e);}
+@media(prefers-reduced-motion:reduce){
+  .human-check-box,.human-check-mark,.human-check{transition:none;}
+  .human-check.checking .human-check-box{animation:none;}
+}
+
 /* How many of the three allowed items this phone number has left. */
 .allowance-note{
   display:none;font-size:12.5px;line-height:1.55;margin:7px 0 0;font-weight:700;
@@ -1508,6 +1556,19 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
           <label data-i18n="form_note"></label>
           <textarea id="donateNote"></textarea>
         </div>
+
+      <!-- Not-a-robot check. The box itself is a button, so it works with a
+           keyboard and a screen reader, not just a mouse. The hidden text
+           field above it is a honeypot: it's invisible and skipped by
+           keyboards and screen readers, so a real person never fills it in,
+           but a form-filling script usually will. -->
+      <div class="field">
+        <input type="text" class="hp-field" id="donateHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="human-check" id="donateHumanCheck" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="human-check-box"><span class="human-check-mark"></span></span>
+          <span class="human-check-label" id="donateHumanLabel"></span>
+        </div>
+      </div>
         <button type="submit" class="btn btn-primary btn-block" data-i18n="form_submit"></button>
       </form>
 
@@ -1740,6 +1801,18 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
              turned away at the end. -->
         <p class="allowance-note" id="reserveAllowance"></p>
       </div>
+      <!-- Not-a-robot check. The box itself is a button, so it works with a
+           keyboard and a screen reader, not just a mouse. The hidden text
+           field above it is a honeypot: it's invisible and skipped by
+           keyboards and screen readers, so a real person never fills it in,
+           but a form-filling script usually will. -->
+      <div class="field">
+        <input type="text" class="hp-field" id="reserveHp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="human-check" id="reserveHumanCheck" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="human-check-box"><span class="human-check-mark"></span></span>
+          <span class="human-check-label" id="reserveHumanLabel"></span>
+        </div>
+      </div>
 
       <div class="field">
         <label data-i18n="reserve_location_label"></label>
@@ -1777,6 +1850,7 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
         <label data-i18n="form_note"></label>
         <textarea id="reserveNotes" data-i18n-placeholder="reserve_notes_placeholder"></textarea>
       </div>
+
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" data-close="reserveModal" data-i18n="cancel_btn"></button>
         <button type="submit" class="btn btn-primary" id="reserveSubmitBtn" data-i18n="reserve_submit_btn"></button>
@@ -2026,6 +2100,11 @@ const translations = {
     allowance_left: "You can still reserve {n} of {max} items.",
     allowance_none: "This number has already reserved {max} items — that's the limit.",
     error_limit_reached: "That's {max} items already reserved on this number. Please contact us if you need more.",
+    human_check_prompt: "I'm not a robot",
+    human_check_checking: "Checking…",
+    human_check_verified: "Verified — thank you",
+    human_check_failed: "Hmm, that didn't look right. Tap the box again.",
+    human_check_required: "Please tick the \"I'm not a robot\" box first.",
     check_title: "Before saving — does this look right?",
     save_anyway_btn: "Save anyway",
     check_no_photo: "No photo added. Items with a photo get picked up far more often.",
@@ -2169,6 +2248,11 @@ const translations = {
     allowance_left: "ما زال بإمكانك حجز {n} من أصل {max} قطع.",
     allowance_none: "هذا الرقم حجز {max} قطع بالفعل — هذا هو الحد الأقصى.",
     error_limit_reached: "تم حجز {max} قطع على هذا الرقم بالفعل. يرجى التواصل معنا إذا كنت بحاجة إلى المزيد.",
+    human_check_prompt: "لست روبوتًا",
+    human_check_checking: "جارٍ التحقق…",
+    human_check_verified: "تم التحقق — شكرًا لك",
+    human_check_failed: "لم يبدُ ذلك صحيحًا. اضغط على المربع مرة أخرى.",
+    human_check_required: "يرجى تحديد مربع \"لست روبوتًا\" أولاً.",
     check_title: "قبل الحفظ — هل هذا صحيح؟",
     save_anyway_btn: "احفظ على أي حال",
     check_no_photo: "لم تُضف صورة. القطع التي لها صورة تُحجز أكثر بكثير.",
@@ -2312,6 +2396,11 @@ const translations = {
     allowance_left: "هێشتا دەتوانیت {n} لە {max} کەلوپەل داوا بکەیت.",
     allowance_none: "ئەم ژمارەیە پێشتر {max} کەلوپەلی داوا کردووە — ئەمە سنوورەکەیە.",
     error_limit_reached: "پێشتر {max} کەلوپەل لەسەر ئەم ژمارەیە داوا کراوە. ئەگەر زیاترت دەوێت تکایە پەیوەندیمان پێوە بکە.",
+    human_check_prompt: "من ڕۆبۆت نیم",
+    human_check_checking: "پشکنین دەکرێت…",
+    human_check_verified: "پشتڕاستکرایەوە — سوپاس",
+    human_check_failed: "وا دیار نەبوو ڕاست بێت. دووبارە کرتە لە خانەکە بکە.",
+    human_check_required: "تکایە سەرەتا خانەی \"من ڕۆبۆت نیم\" دیاری بکە.",
     check_title: "پێش پاشەکەوتکردن — ئایا ئەمە ڕاستە؟",
     save_anyway_btn: "بەهەرحاڵ پاشەکەوتی بکە",
     check_no_photo: "هیچ وێنەیەک زیاد نەکراوە. ئەو کەلوپەلانەی وێنەیان هەیە زۆر زیاتر داوا دەکرێن.",
@@ -3546,6 +3635,122 @@ function setReserveMarker(lat, lng, note){
   reserveMap.setView([lat,lng], 15);
 }
 
+/* ---------- "I'm not a robot" check ----------
+   One box to tick, no warped letters to read, and nothing sent to Google.
+   It decides from how the click arrived rather than from a puzzle:
+
+     * event.isTrusted — the browser sets this to false for any click
+       generated by a script (element.click(), dispatchEvent). A real
+       finger or mouse always sets it to true. This is the one signal a
+       page can rely on completely, and it's what catches the simple
+       form-spamming scripts this is actually for.
+     * some sign of a person being present — a pointer that moved, a touch,
+       or keys being pressed. Keyboard alone is enough, so someone using
+       the site without a mouse (or with a screen reader) passes normally;
+       locking those people out of asking for clothes would be a far worse
+       bug than letting a bot through.
+     * a plausible amount of time since the form opened. Scripts fill and
+       submit in a few milliseconds.
+     * the honeypot field is still empty. It's invisible, keyboard-skipped
+       and hidden from screen readers, so only a script that fills in every
+       field it finds would ever put something in it.
+
+   What this does NOT do, to be clear about it: a serious bot driving a real
+   browser produces trusted events and believable mouse movement, and would
+   walk straight through. It also can't be checked by the server, so posting
+   directly at the API skips it entirely. The actual wall is the three-items
+   -per-person cap in the database; this just keeps casual form spam out. */
+
+const humanSignals = { pointerMoves: 0, keyPresses: 0, touches: 0, lastMove: null, pathChanges: 0 };
+(function watchForSignsOfLife(){
+  document.addEventListener("pointermove", e=>{
+    if(!e.isTrusted) return;
+    humanSignals.pointerMoves++;
+    // A mouse dragged by hand wanders; a teleport to one spot doesn't.
+    if(humanSignals.lastMove){
+      const dx = e.clientX - humanSignals.lastMove.x, dy = e.clientY - humanSignals.lastMove.y;
+      if(Math.abs(dx) + Math.abs(dy) > 2) humanSignals.pathChanges++;
+    }
+    humanSignals.lastMove = { x: e.clientX, y: e.clientY };
+  }, { passive: true });
+  document.addEventListener("keydown", e=>{ if(e.isTrusted) humanSignals.keyPresses++; }, { passive: true });
+  document.addEventListener("pointerdown", e=>{ if(e.isTrusted) humanSignals.touches++; }, { passive: true });
+  document.addEventListener("touchstart", e=>{ if(e.isTrusted) humanSignals.touches++; }, { passive: true });
+})();
+
+const MIN_MS_BEFORE_HUMAN = 800;   // a script is done long before this
+
+// Returns null when it looks like a person, or a reason string when it doesn't.
+function judgeHumanClick(event, openedAt, honeypotValue){
+  if(!event || event.isTrusted !== true) return "untrusted";
+  if((honeypotValue || "").trim() !== "") return "honeypot";
+  if(Date.now() - openedAt < MIN_MS_BEFORE_HUMAN) return "too_fast";
+  const present = humanSignals.pathChanges >= 2 || humanSignals.keyPresses >= 1 || humanSignals.touches >= 1;
+  if(!present) return "no_signs";
+  return null;
+}
+
+/* Wires one of these boxes up. Returns { ok(), reset() } — ok() is what the
+   form asks before it will submit. */
+function humanCheck(boxId, labelId, honeypotId){
+  const box = document.getElementById(boxId);
+  const label = document.getElementById(labelId);
+  const honeypot = document.getElementById(honeypotId);
+  let verified = false;
+  let openedAt = Date.now();
+  let busy = false;
+
+  function paint(state, key){
+    box.classList.remove("checking","verified","failed");
+    if(state) box.classList.add(state);
+    box.setAttribute("aria-checked", state === "verified" ? "true" : "false");
+    label.setAttribute("data-i18n", key);
+    label.textContent = t(key);
+  }
+
+  function attempt(event){
+    if(verified || busy) return;
+    const problem = judgeHumanClick(event, openedAt, honeypot ? honeypot.value : "");
+    busy = true;
+    paint("checking", "human_check_checking");
+    // The short pause is honest work, not theatre: the signals are read
+    // again afterwards, so someone who ticked the box the instant the form
+    // opened still passes once a little time and movement have gone by.
+    // Note it re-judges against the *real* openedAt — waiving the timing
+    // rule here would make it meaningless, since a script could click
+    // instantly and simply wait out the pause.
+    setTimeout(()=>{
+      busy = false;
+      const stillAProblem = problem === "untrusted" || problem === "honeypot"
+        ? problem
+        : judgeHumanClick(event, openedAt, honeypot ? honeypot.value : "");
+      if(stillAProblem){
+        paint("failed", "human_check_failed");
+      }else{
+        verified = true;
+        paint("verified", "human_check_verified");
+      }
+    }, 650);
+  }
+
+  box.addEventListener("click", attempt);
+  box.addEventListener("keydown", e=>{
+    if(e.key === " " || e.key === "Enter"){ e.preventDefault(); attempt(e); }
+  });
+
+  function reset(){
+    verified = false; busy = false;
+    openedAt = Date.now();
+    if(honeypot) honeypot.value = "";
+    paint(null, "human_check_prompt");
+  }
+  reset();
+  return { ok: ()=> verified, reset: reset };
+}
+
+const reserveHuman = humanCheck("reserveHumanCheck", "reserveHumanLabel", "reserveHp");
+const donateHuman  = humanCheck("donateHumanCheck",  "donateHumanLabel",  "donateHp");
+
 /* ---------- The three-items-per-person cap ----------
    The real limit is enforced in the database, inside submit_reservation
    (see 0007_limits_edit_and_types.sql), so a script posting straight to the
@@ -3595,6 +3800,7 @@ function openReserveModal(source, itemId, label){
   hideLocateHelp();
   clearTimeout(allowanceTimer);
   setAllowanceNote(null);
+  reserveHuman.reset();
   openModal("reserveModal");
   requestAnimationFrame(()=>{
     ensureReserveMap();
@@ -3738,6 +3944,11 @@ document.getElementById("locateRetryBtn").addEventListener("click", ()=> locateM
 
 document.getElementById("reserveForm").addEventListener("submit", async e=>{
   e.preventDefault();
+  if(!reserveHuman.ok()){
+    showToast(t("human_check_required"), true);
+    document.getElementById("reserveHumanCheck").scrollIntoView({ block:"nearest", behavior:"smooth" });
+    return;
+  }
   const btn = document.getElementById("reserveSubmitBtn");
   btn.disabled = true;
   try{
@@ -3964,6 +4175,11 @@ document.getElementById("editPhoneBtn").addEventListener("click", async ()=>{
 /* ---------- Donate page: goods form + admin inbox ---------- */
 document.getElementById("donateForm").addEventListener("submit", async e=>{
   e.preventDefault();
+  if(!donateHuman.ok()){
+    showToast(t("human_check_required"), true);
+    document.getElementById("donateHumanCheck").scrollIntoView({ block:"nearest", behavior:"smooth" });
+    return;
+  }
   const btn = e.target.querySelector('button[type="submit"]');
   btn.disabled = true;
   try{
@@ -3976,6 +4192,7 @@ document.getElementById("donateForm").addEventListener("submit", async e=>{
     });
     if(error) throw error;
     e.target.reset();
+    donateHuman.reset();
     showToast(t("donate_thanks_toast"));
     if(isAdmin()) loadInbox();
   }catch(err){

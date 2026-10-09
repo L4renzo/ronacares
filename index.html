@@ -1163,6 +1163,14 @@ html[dir="rtl"] .sidebar.open{transform:translateX(0);}
   .human-check.checking .human-check-box{animation:none;}
 }
 
+
+/* Warning line on a reservation that matches a reselling pattern. */
+.res-flag{
+  font-size:12px;font-weight:700;line-height:1.5;margin:6px 0 0;
+  color:#8a4b00;background:#fff7ed;border:1px solid #fcd9a8;
+  border-radius:8px;padding:6px 9px;
+}
+
 /* How many of the three allowed items this phone number has left. */
 .allowance-note{
   display:none;font-size:12.5px;line-height:1.55;margin:7px 0 0;font-weight:700;
@@ -2053,7 +2061,7 @@ const translations = {
     donate_call_btn: "Call to Donate", phone_not_set: "Phone number coming soon", edit_phone_btn: "Edit number",
     donate_goods_title: "Donate Clothes, Toys & More",
     donate_goods_text: "Fill out the form below and our admin team will follow up with you to arrange a drop-off or pick-up.",
-    form_name: "Your name", form_contact: "Phone or email", form_item_desc: "What are you donating?",
+    form_name: "Your name", form_contact: "Mobile number", form_item_desc: "What are you donating?",
     form_quantity: "Approximate quantity", form_note: "Anything else we should know?",
     form_submit: "Send Donation Request",
     donate_thanks_toast: "Thank you! Your donation request has been sent.",
@@ -2105,6 +2113,13 @@ const translations = {
     human_check_verified: "Verified — thank you",
     human_check_failed: "Hmm, that didn't look right. Tap the box again.",
     human_check_required: "Please tick the \"I'm not a robot\" box first.",
+    error_bad_phone: "Please enter a real mobile number, like 0750 123 4567.",
+    error_device_limit: "This device has already reserved 3 items. Each household can take up to 3 so there's enough to go around — please contact the school if you need more.",
+    error_device_check: "Something went wrong with this request. Please reload the page and try again.",
+    allowance_bad_phone: "That doesn't look like a mobile number yet.",
+    flag_same_location: "⚠ {n} requests pinned to this same spot",
+    flag_many_numbers: "⚠ {n} different numbers from this same device type",
+    flag_same_name: "⚠ This name has been used with {n} separate phone numbers",
     check_title: "Before saving — does this look right?",
     save_anyway_btn: "Save anyway",
     check_no_photo: "No photo added. Items with a photo get picked up far more often.",
@@ -2201,7 +2216,7 @@ const translations = {
     donate_call_btn: "اتصل للتبرع", phone_not_set: "رقم الهاتف قريباً", edit_phone_btn: "تعديل الرقم",
     donate_goods_title: "تبرع بالملابس والألعاب والمزيد",
     donate_goods_text: "املأ النموذج أدناه وسيتواصل معك فريق الإدارة لترتيب الاستلام أو التسليم.",
-    form_name: "اسمك", form_contact: "رقم الهاتف أو البريد الإلكتروني", form_item_desc: "ماذا تتبرع به؟",
+    form_name: "اسمك", form_contact: "رقم الموبايل", form_item_desc: "ماذا تتبرع به؟",
     form_quantity: "الكمية التقريبية", form_note: "أي شيء آخر يجب أن نعرفه؟",
     form_submit: "إرسال طلب التبرع",
     donate_thanks_toast: "شكراً لك! تم إرسال طلب تبرعك.",
@@ -2253,6 +2268,13 @@ const translations = {
     human_check_verified: "تم التحقق — شكرًا لك",
     human_check_failed: "لم يبدُ ذلك صحيحًا. اضغط على المربع مرة أخرى.",
     human_check_required: "يرجى تحديد مربع \"لست روبوتًا\" أولاً.",
+    error_bad_phone: "يرجى إدخال رقم موبايل حقيقي، مثل 0750 123 4567.",
+    error_device_limit: "هذا الجهاز حجز 3 قطع بالفعل. يمكن لكل أسرة أخذ 3 قطع كحد أقصى حتى تكفي الجميع — يرجى التواصل مع المدرسة إذا كنت بحاجة إلى المزيد.",
+    error_device_check: "حدث خطأ في هذا الطلب. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.",
+    allowance_bad_phone: "لا يبدو هذا رقم موبايل بعد.",
+    flag_same_location: "⚠ {n} طلبات من نفس الموقع تمامًا",
+    flag_many_numbers: "⚠ {n} أرقام مختلفة من نفس نوع الجهاز",
+    flag_same_name: "⚠ استُخدم هذا الاسم مع {n} أرقام منفصلة",
     check_title: "قبل الحفظ — هل هذا صحيح؟",
     save_anyway_btn: "احفظ على أي حال",
     check_no_photo: "لم تُضف صورة. القطع التي لها صورة تُحجز أكثر بكثير.",
@@ -2349,7 +2371,7 @@ const translations = {
     donate_call_btn: "پەیوەندی بکە بۆ بەخشین", phone_not_set: "ژمارەی تەلەفۆن بەم زووانە زیاددەکرێت", edit_phone_btn: "دەستکاریکردنی ژمارە",
     donate_goods_title: "بەخشینی جل، یاری و زیاتر",
     donate_goods_text: "فۆڕمی خوارەوە پڕبکەرەوە و تیمی ئەدمین پەیوەندیت پێوە دەکات بۆ ڕێکخستنی گەیاندن یان وەرگرتن.",
-    form_name: "ناوت", form_contact: "ژمارەی تەلەفۆن یان ئیمەیل", form_item_desc: "چی دەبەخشیت؟",
+    form_name: "ناوت", form_contact: "ژمارەی مۆبایل", form_item_desc: "چی دەبەخشیت؟",
     form_quantity: "بڕی نزیکەی", form_note: "هیچ شتێکی تر هەیە پێویستە بزانین؟",
     form_submit: "ناردنی داواکاری بەخشین",
     donate_thanks_toast: "سوپاس! داواکاری بەخشینەکەت نێردرا.",
@@ -2401,6 +2423,13 @@ const translations = {
     human_check_verified: "پشتڕاستکرایەوە — سوپاس",
     human_check_failed: "وا دیار نەبوو ڕاست بێت. دووبارە کرتە لە خانەکە بکە.",
     human_check_required: "تکایە سەرەتا خانەی \"من ڕۆبۆت نیم\" دیاری بکە.",
+    error_bad_phone: "تکایە ژمارەی مۆبایلی ڕاستەقینە بنووسە، وەک ٠٧٥٠ ١٢٣ ٤٥٦٧.",
+    error_device_limit: "ئەم ئامێرە پێشتر ٣ کەلوپەلی داوا کردووە. هەر خێزانێک دەتوانێت تا ٣ دانە ببات بۆ ئەوەی بەشی هەمووان بکات — ئەگەر زیاترت دەوێت تکایە پەیوەندی بە قوتابخانەوە بکە.",
+    error_device_check: "کێشەیەک لەم داواکارییەدا ڕوویدا. تکایە پەڕەکە نوێ بکەرەوە و دووبارە هەوڵبدەرەوە.",
+    allowance_bad_phone: "هێشتا وەک ژمارەی مۆبایل دیار نییە.",
+    flag_same_location: "⚠ {n} داواکاری لە هەمان شوێن",
+    flag_many_numbers: "⚠ {n} ژمارەی جیاواز لە هەمان جۆری ئامێر",
+    flag_same_name: "⚠ ئەم ناوە لەگەڵ {n} ژمارەی جیاوازدا بەکارهێنراوە",
     check_title: "پێش پاشەکەوتکردن — ئایا ئەمە ڕاستە؟",
     save_anyway_btn: "بەهەرحاڵ پاشەکەوتی بکە",
     check_no_photo: "هیچ وێنەیەک زیاد نەکراوە. ئەو کەلوپەلانەی وێنەیان هەیە زۆر زیاتر داوا دەکرێن.",
@@ -2489,6 +2518,9 @@ function friendlyError(err){
   if(msg.includes("no longer exists")) return t("error_item_gone");
   // The three-per-person cap, refused by submit_reservation.
   if(msg.includes("reservation limit reached")) return t("error_limit_reached");
+  if(msg.includes("device limit reached")) return t("error_device_limit");
+  if(msg.includes("invalid phone number")) return t("error_bad_phone");
+  if(msg.includes("device check failed")) return t("error_device_check");
   return t("error_generic");
 }
 
@@ -3751,6 +3783,88 @@ function humanCheck(boxId, labelId, honeypotId){
 const reserveHuman = humanCheck("reserveHumanCheck", "reserveHumanLabel", "reserveHp");
 const donateHuman  = humanCheck("donateHumanCheck",  "donateHumanLabel",  "donateHp");
 
+/* ---------- Who is asking ----------
+   Counting only by phone number turned out to be no limit at all: someone
+   reselling donated clothes just types a different number each time. So
+   every request also carries two things about the browser it came from.
+
+   deviceId is a random id kept in this browser's storage. It isn't
+   personal and says nothing about who anyone is — it's just a number that
+   stays the same between visits, which is enough for the database to
+   refuse a fourth item from the same browser however many phone numbers
+   get tried. Clearing site data makes a new one, so it isn't unbeatable;
+   it's there to make farming tedious rather than free.
+
+   deviceFingerprint is a rough description of the device — screen size,
+   timezone, that sort of thing. Two identical phones produce an identical
+   one, so it is NEVER used to block anybody. It only shows up as a
+   warning on the admin's screen, where a person can weigh it. */
+const DEVICE_ID_KEY = "rona_device_v1";
+
+function makeDeviceId(){
+  // crypto.randomUUID is missing on older iOS Safari, hence the fallback.
+  try{
+    if(window.crypto && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+    if(window.crypto && crypto.getRandomValues){
+      const a = new Uint8Array(16); crypto.getRandomValues(a);
+      return Array.from(a, b=> b.toString(16).padStart(2,"0")).join("");
+    }
+  }catch(e){}
+  return "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 14);
+}
+
+let deviceIdCache = null;
+function deviceId(){
+  if(deviceIdCache) return deviceIdCache;
+  let id = storageGet("local", DEVICE_ID_KEY);
+  if(!id || String(id).length < 8){
+    id = makeDeviceId();
+    storageSet("local", DEVICE_ID_KEY, id);
+    // If storage is blocked (private browsing, locked-down settings) the
+    // write silently does nothing, so the id lasts only for this page.
+    // The per-phone limit still applies to them.
+  }
+  deviceIdCache = id;
+  return id;
+}
+
+let deviceFpCache = null;
+function deviceFingerprint(){
+  if(deviceFpCache) return deviceFpCache;
+  try{
+    const n = navigator, sc = window.screen || {};
+    const parts = [
+      sc.width + "x" + sc.height, sc.colorDepth, window.devicePixelRatio || 1,
+      (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || "",
+      n.language || "", (n.languages || []).join(","),
+      n.platform || "", n.hardwareConcurrency || 0, n.deviceMemory || 0,
+      n.maxTouchPoints || 0
+    ].join("|");
+    // Not a secure hash — it's a short label for grouping, nothing more.
+    let h = 2166136261;
+    for(let i = 0; i < parts.length; i++){
+      h ^= parts.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    deviceFpCache = (h >>> 0).toString(16);
+  }catch(e){
+    deviceFpCache = null;
+  }
+  return deviceFpCache;
+}
+
+/* Kurdistan/Iraq mobile numbers: 07 then a carrier digit then eight more.
+   Matches _rona_valid_phone in 0008_stricter_limits.sql — the database is
+   what actually enforces it; this is only so the form can say something
+   useful before anyone fills the rest of it in. */
+function looksLikePhone(raw){
+  let d = String(raw || "").replace(/[^0-9]/g, "");
+  if(!d) return false;
+  d = d.replace(/^0+/, "");
+  if(d.length > 9 && d.slice(0,3) === "964") d = d.slice(3).replace(/^0+/, "");
+  return /^7[5-9][0-9]{8}$/.test(d);
+}
+
 /* ---------- The three-items-per-person cap ----------
    The real limit is enforced in the database, inside submit_reservation
    (see 0007_limits_edit_and_types.sql), so a script posting straight to the
@@ -3772,8 +3886,13 @@ function setAllowanceNote(key, state, n){
 async function refreshAllowance(){
   const phone = document.getElementById("reservePhone").value.trim();
   if(phone.length < 4){ setAllowanceNote(null); return; }
+  // Say so immediately rather than asking the server about something that
+  // isn't a phone number.
+  if(!looksLikePhone(phone)){ setAllowanceNote("allowance_bad_phone", "none", 0); return; }
   try{
-    const { data, error } = await db.rpc("reservation_allowance", { p_phone: phone });
+    const { data, error } = await db.rpc("reservation_allowance", {
+      p_phone: phone, p_device_id: deviceId()
+    });
     if(error) throw error;
     const left = typeof data === "number" ? data : parseInt(data, 10);
     if(isNaN(left)){ setAllowanceNote(null); return; }
@@ -3949,6 +4068,12 @@ document.getElementById("reserveForm").addEventListener("submit", async e=>{
     document.getElementById("reserveHumanCheck").scrollIntoView({ block:"nearest", behavior:"smooth" });
     return;
   }
+  const phoneField = document.getElementById("reservePhone");
+  if(!looksLikePhone(phoneField.value)){
+    showToast(t("error_bad_phone"), true);
+    phoneField.focus();
+    return;
+  }
   const btn = document.getElementById("reserveSubmitBtn");
   btn.disabled = true;
   try{
@@ -3963,7 +4088,9 @@ document.getElementById("reserveForm").addEventListener("submit", async e=>{
       p_lat: reserveLat,
       p_lng: reserveLng,
       p_location_note: reserveLocationNote,
-      p_notes: document.getElementById("reserveNotes").value.trim() || null
+      p_notes: document.getElementById("reserveNotes").value.trim() || null,
+      p_device_id: deviceId(),
+      p_device_fp: deviceFingerprint()
     });
     if(error) throw error;
 
@@ -4007,6 +4134,54 @@ async function loadReservations(silent){
     if(!silent) showToast(friendlyError(err), true);
   }
 }
+/* ---------- Warnings on the reservations list ----------
+   Two things that look like reselling can't safely be blocked outright:
+   a whole apartment block shares one set of map coordinates, and two
+   people with the same phone model produce the same device fingerprint.
+   Refusing on either would turn away real families. So they're surfaced
+   here instead and a person decides — which is also simply better, since
+   whoever hands the clothes over knows the neighbourhood. */
+
+// Rounded to about 30 metres: close enough to group one household,
+// loose enough not to be defeated by GPS drift between two visits.
+function locationKey(r){
+  if(r.lat == null || r.lng == null) return null;
+  return r.lat.toFixed(4) + "," + r.lng.toFixed(4);
+}
+
+function reservationFlags(r, all){
+  const flags = [];
+  const live = all.filter(x=> x.status !== "cancelled");
+
+  const loc = locationKey(r);
+  if(loc){
+    const sameSpot = live.filter(x=> locationKey(x) === loc);
+    const otherPeople = new Set(sameSpot.map(x=> x.phone_key || x.phone));
+    if(sameSpot.length > 3 && otherPeople.size > 1){
+      flags.push(t("flag_same_location").replace("{n}", sameSpot.length));
+    }
+  }
+
+  if(r.device_fp){
+    const sameDevice = live.filter(x=> x.device_fp === r.device_fp);
+    const numbers = new Set(sameDevice.map(x=> x.phone_key || x.phone));
+    // Several different numbers from one kind of device is the pattern
+    // worth a second look; the same number repeatedly is just a family.
+    if(numbers.size > 2){
+      flags.push(t("flag_many_numbers").replace("{n}", numbers.size));
+    }
+  }
+
+  const sameName = live.filter(x=>
+    (x.name || "").trim().toLowerCase() === (r.name || "").trim().toLowerCase());
+  const nameNumbers = new Set(sameName.map(x=> x.phone_key || x.phone));
+  if(nameNumbers.size > 1){
+    flags.push(t("flag_same_name").replace("{n}", nameNumbers.size));
+  }
+
+  return flags;
+}
+
 function renderReservationsCached(){
   if(!isAdmin()) return;
   const list = document.getElementById("reservationsList");
@@ -4023,7 +4198,9 @@ function renderReservationsCached(){
       '<span class="status-pill '+r.status+'">'+escapeHTML(t("status_"+r.status))+'</span></div>' +
       '<p class="res-item-label">'+escapeHTML(r.item_label)+'</p>' +
       '<p class="res-sub">'+escapeHTML(r.phone)+(r.area ? " · "+escapeHTML(r.area) : "")+'</p>' +
-      '<p class="res-sub">'+fmtDate(r.created_at)+'</p>';
+      '<p class="res-sub">'+fmtDate(r.created_at)+'</p>' +
+      reservationFlags(r, cachedReservations)
+        .map(f=> '<p class="res-flag">'+escapeHTML(f)+'</p>').join("");
     card.addEventListener("click", ()=> openReservationDetail(r.id));
     list.appendChild(card);
   });
